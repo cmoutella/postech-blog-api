@@ -24,7 +24,16 @@ module.exports = {
         'semi': true,
       }
     ],
-    '@typescript-eslint/interface-name-prefix': 'off',
+    "@typescript-eslint/naming-convention": [
+      "error", {
+        "selector": "interface",
+        "format": ["PascalCase"],
+        "custom": {
+          "regex": "^Interface[A-Z]",
+          "match": true
+        }
+      }
+    ],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
