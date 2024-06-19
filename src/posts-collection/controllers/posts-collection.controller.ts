@@ -21,7 +21,7 @@ export class PostsController {
 
   @Get()
   async getAllPosts(page?: number, limit?: number) {
-    return this.postsService.getAllPosts(page, limit);
+    return await this.postsService.getAllPosts(page, limit);
   }
 
   @Get()
@@ -30,12 +30,12 @@ export class PostsController {
     page?: number,
     limit?: number,
   ) {
-    return this.postsService.getAllPostsByKeyword(keyword, page, limit);
+    return await this.postsService.getAllPostsByKeyword(keyword, page, limit);
   }
 
   @Get(':id')
   async getOnePost(@Param('id') id: string) {
-    return this.postsService.getOnePost(id);
+    return await this.postsService.getOnePost(id);
   }
 
   @Put(':id')
@@ -43,7 +43,7 @@ export class PostsController {
     @Param('id') id: string,
     @Body() data: Partial<InterfacePost>,
   ) {
-    return this.postsService.updatePost(id, data);
+    return await this.postsService.updatePost(id, data);
   }
 
   @Delete(':id')

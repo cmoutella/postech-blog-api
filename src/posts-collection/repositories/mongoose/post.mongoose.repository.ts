@@ -17,7 +17,7 @@ export class PostMongooseRepository implements PostRepository {
   async getAllPosts(page = 1, limit = DEFAULT_LIMIT): Promise<InterfacePost[]> {
     const offset = (page - 1) * limit;
 
-    return this.postModel.find().skip(offset).limit(limit).exec();
+    return await this.postModel.find().skip(offset).limit(limit).exec();
   }
 
   async getAllPostsByKeyword(
@@ -28,7 +28,7 @@ export class PostMongooseRepository implements PostRepository {
     const offset = (page - 1) * limit;
 
     // TODO
-    return this.postModel
+    return await this.postModel
       .find((post: InterfacePost) =>
         post.keyWords.find((word) => word === keyword),
       )
@@ -38,7 +38,7 @@ export class PostMongooseRepository implements PostRepository {
   }
 
   async getOnePost(id: string): Promise<InterfacePost> {
-    return this.postModel.findById(id).exec();
+    return await this.postModel.findById(id).exec();
   }
 
   async updatePost(id: string, data: Partial<InterfacePost>): Promise<void> {
