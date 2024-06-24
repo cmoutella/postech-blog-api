@@ -6,9 +6,11 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { InterfacePost } from '../schemas/models/post.interface';
 import { PostsService } from '../services/posts-collection.service';
+import { AuthGuard } from 'src/shared/guards/auth.guard';
 
 @Controller('post')
 export class PostsController {
@@ -46,6 +48,7 @@ export class PostsController {
     return await this.postsService.updatePost(id, data);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deletePost(@Param('id') id: string) {
     await this.postsService.deletePost(id);
