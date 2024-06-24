@@ -4,14 +4,18 @@ import { AppService } from './app.service';
 import { PostsCollectionModule } from './posts-collection/posts-collection.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/blog-api'),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     PostsCollectionModule,
     JwtModule.register({
       global: true,
-      secret: 'fiap',
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '5m' },
     }),
   ],
