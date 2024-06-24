@@ -7,11 +7,14 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { InterfacePost } from '../schemas/models/post.interface';
 import { PostsService } from '../services/posts-collection.service';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
+import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller('post')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
