@@ -5,6 +5,7 @@ import { PostsCollectionModule } from './posts-collection/posts-collection.modul
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
+    UsersModule,
     PostsCollectionModule,
     JwtModule.register({
       global: true,
