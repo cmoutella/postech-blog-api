@@ -13,8 +13,12 @@ export class UserMongooseRepository implements UserRepository {
     await createUser.save();
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<InterfaceUser[]> {
     return await this.userModel.find().exec();
+  }
+
+  async getByUsername(username: string): Promise<InterfaceUser> {
+    return await this.userModel.findOne({ username: username }).exec();
   }
 
   async authUser(): Promise<string> {
