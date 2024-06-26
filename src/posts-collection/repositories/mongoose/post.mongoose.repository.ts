@@ -29,9 +29,7 @@ export class PostMongooseRepository implements PostRepository {
 
     // TODO
     return await this.postModel
-      .find((post: InterfacePost) =>
-        post.keyWords.find((word) => word === keyword),
-      )
+      .find({ keyWords: keyword })
       .skip(offset)
       .limit(limit)
       .exec();
