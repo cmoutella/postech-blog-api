@@ -11,7 +11,7 @@ import {
 import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
 import { InterfaceUser } from '../schemas/models/user.interface';
 import { UserService } from '../services/user.service';
-import { EncryptPasswordPipe } from '../pipe/password.pipe';
+import { EncryptPasswordPipe, SignInPipe } from '../pipe/password.pipe';
 
 @UseInterceptors(LoggingInterceptor)
 @Controller('users')
@@ -34,9 +34,10 @@ export class UsersController {
     return await this.userService.getByUsername(username);
   }
 
-  @Post()
-  async authUser(@Body() username: string, @Body() password: string) {
-    return await this.userService.authUser(username, password);
+  @UsePipes(new SignInPipe())
+  @Post('/login')
+  async authUser(@Body() credentials: InterfaceUser) {
+    return credentials;
   }
 
   @Delete(':id')
