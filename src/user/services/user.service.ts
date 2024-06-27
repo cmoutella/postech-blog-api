@@ -19,10 +19,6 @@ export class UserService {
     return await this.userRepository.getByUsername(username);
   }
 
-  async authUser(username: string, password: string): Promise<string> {
-    return await this.userRepository.authUser(username, password);
-  }
-
   async deleteUser(id: string): Promise<void> {
     await this.userRepository.deleteUser(id);
   }

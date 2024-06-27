@@ -21,10 +21,6 @@ export class UserMongooseRepository implements UserRepository {
     return await this.userModel.findOne({ username: username }).exec();
   }
 
-  async authUser(): Promise<string> {
-    throw new Error('TO DO');
-  }
-
   async deleteUser(id: string): Promise<void> {
     await this.userModel.deleteOne({ _id: id }).exec();
   }
