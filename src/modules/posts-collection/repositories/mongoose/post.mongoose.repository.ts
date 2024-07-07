@@ -1,9 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { PostRepository } from '../post.repository';
-import { InterfacePost } from 'src/posts-collection/schemas/models/post.interface';
-import { Post } from 'src/posts-collection/schemas/post.schema';
 import { Model } from 'mongoose';
 import { DEFAULT_LIMIT } from 'src/shared/default/pagination';
+import { Post } from '../../schemas/post.schema';
+import { InterfacePost } from '../../schemas/models/post.interface';
 
 export class PostMongooseRepository implements PostRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}

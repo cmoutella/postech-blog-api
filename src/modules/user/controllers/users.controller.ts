@@ -16,7 +16,6 @@ import { EncryptPasswordPipe } from '../pipe/password.pipe';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
-import { InvalidCredentialsError } from 'src/shared/errors/unauthorized';
 
 @UseInterceptors(LoggingInterceptor)
 @Controller('users')
@@ -51,7 +50,7 @@ export class UsersController {
     const foundUser = await this.userService.getByUsername(username);
     const passwordMatch = await compare(password, foundUser.password);
 
-    if (!passwordMatch) throw new InvalidCredentialsError();
+    if (!passwordMatch) throw new Error();
 
     const token = await this.jwtService.sign({ username: username });
 
