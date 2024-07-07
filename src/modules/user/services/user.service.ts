@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { InterfaceUser } from '../schemas/models/user.interface';
 import { User } from '../schemas/user.schema';
@@ -16,10 +16,17 @@ export class UserService {
   }
 
   async getByUsername(username: string): Promise<User> {
-    return await this.userRepository.getByUsername(username);
+    const user = await this.userRepository.getByUsername(username);
+
+    if (!user) throw new NotFoundException();
+    return user;
   }
 
   async deleteUser(id: string): Promise<void> {
+    const user = await this.userRepository.getById(id);
+
+    if (!user) throw new NotFoundException();
+
     await this.userRepository.deleteUser(id);
   }
 }
