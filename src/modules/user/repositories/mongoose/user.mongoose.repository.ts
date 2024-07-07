@@ -17,6 +17,10 @@ export class UserMongooseRepository implements UserRepository {
     return await this.userModel.find().exec();
   }
 
+  async getById(id: string): Promise<InterfaceUser> {
+    return await this.userModel.findById({ _id: id }).exec();
+  }
+
   async getByUsername(username: string): Promise<InterfaceUser> {
     return await this.userModel.findOne({ username: username }).exec();
   }
