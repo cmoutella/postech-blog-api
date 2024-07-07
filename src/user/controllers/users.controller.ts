@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
@@ -12,11 +13,18 @@ import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor'
 import { InterfaceUser } from '../schemas/models/user.interface';
 import { UserService } from '../services/user.service';
 import { EncryptPasswordPipe } from '../pipe/password.pipe';
+import { AuthGuard } from 'src/shared/guards/auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { compare } from 'bcryptjs';
+import { InvalidCredentialsError } from 'src/shared/errors/unauthorized';
 
 @UseInterceptors(LoggingInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
   @UsePipes(new EncryptPasswordPipe())
   @Post()
@@ -24,19 +32,30 @@ export class UsersController {
     return await this.userService.createUser(newUser);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async getAllUsers() {
     return await this.userService.getAllUsers();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
     return await this.userService.getByUsername(username);
   }
 
-  @Post()
-  async authUser(@Body() username: string, @Body() password: string) {
-    return await this.userService.authUser(username, password);
+  @Post('/login')
+  async authUser(@Body() credentials: InterfaceUser) {
+    const { username, password } = credentials;
+
+    const foundUser = await this.userService.getByUsername(username);
+    const passwordMatch = await compare(password, foundUser.password);
+
+    if (!passwordMatch) throw new InvalidCredentialsError();
+
+    const token = await this.jwtService.sign({ username: username });
+
+    return { token: token };
   }
 
   @Delete(':id')

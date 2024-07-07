@@ -30,6 +30,7 @@ type CreatePost = z.infer<typeof createPostSchema>;
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @UseGuards(AuthGuard)
   @UsePipes(new ZodValidationPipe(createPostSchema))
   @Post()
   async createPost(@Body() { title, text, keyWords }: CreatePost) {
@@ -51,6 +52,7 @@ export class PostsController {
     return await this.postsService.getOnePost(id);
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   async updatePost(
     @Param('id') id: string,
