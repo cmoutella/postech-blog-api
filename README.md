@@ -57,3 +57,9 @@ Ou crie um novo usuário na rota ```/users```
 
 Em seguida adicione o token retornado no header para requisições em rotas privadas.
 A autenticação ficará válida por até 15 minutos.
+
+## Documentação
+
+Para visualizar os endpoints no Swagger, acessar a rota: ```/api ```
+
+Para visualizar a documentação usando o Redoc, acessar a rota: ```/docs```
