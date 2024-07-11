@@ -16,7 +16,9 @@ import { EncryptPasswordPipe } from '../pipe/password.pipe';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @UseInterceptors(LoggingInterceptor)
 @Controller('users')
 export class UsersController {
@@ -37,12 +39,13 @@ export class UsersController {
     return await this.userService.getAllUsers();
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
     return await this.userService.getByUsername(username);
   }
-
+  @ApiBearerAuth()
   @Post('/login')
   async authUser(@Body() credentials: InterfaceUser) {
     const { username, password } = credentials;
@@ -57,6 +60,8 @@ export class UsersController {
     return { token: token };
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deletePost(@Param('id') id: string) {
     await this.userService.deleteUser(id);

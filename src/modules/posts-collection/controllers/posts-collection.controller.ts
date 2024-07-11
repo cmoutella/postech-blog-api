@@ -16,6 +16,7 @@ import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
 import { z } from 'zod';
 import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 const createPostSchema = z.object({
   title: z.string(),
@@ -25,11 +26,12 @@ const createPostSchema = z.object({
 
 type CreatePost = z.infer<typeof createPostSchema>;
 
+@ApiTags('blog')
 @UseInterceptors(LoggingInterceptor)
-@Controller('post')
+@Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
-
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @UsePipes(new ZodValidationPipe(createPostSchema))
   @Post()
@@ -41,8 +43,14 @@ export class PostsController {
   async getAllPosts(page?: number, limit?: number) {
     return await this.postsService.getAllPosts(page, limit);
   }
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('/admin')
+  async getAllPostsAdmin(page?: number, limit?: number) {
+    return await this.postsService.getAllPosts(page, limit);
+  }
 
-  @Get('/keyword/:keyword')
+  @Get('/search/:keyword')
   async getAllPostsByKeyword(@Param('keyword') keyword: string) {
     return await this.postsService.getAllPostsByKeyword(keyword);
   }
@@ -52,6 +60,7 @@ export class PostsController {
     return await this.postsService.getOnePost(id);
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Put(':id')
   async updatePost(
@@ -60,7 +69,7 @@ export class PostsController {
   ) {
     return await this.postsService.updatePost(id, data);
   }
-
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Delete(':id')
   async deletePost(@Param('id') id: string) {
