@@ -31,7 +31,7 @@ ou
 
 ```yarn docker:up```
 ou
-```npm docker:up```
+```npm run docker:up```
 
 
 # Rotas
@@ -44,7 +44,7 @@ Veja a documentação completa das rotas com Swagger
 Algumas rotas da aplicação são privadas (ex.: criação de posts), para ter acesso a funcionalidade é necessário incluir o token da autenticação nos Headers da requisição.
 
 
-Para gerar o token, faça o login pela rota ```/login```
+Para gerar o token, faça o login pela rota ```users/login```
 
 _(TODO)_ Utilize nosso usuário padrão:
 ```
