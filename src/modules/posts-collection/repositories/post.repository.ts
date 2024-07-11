@@ -2,6 +2,10 @@ import { InterfacePost } from '../schemas/models/post.interface';
 
 export abstract class PostRepository {
   abstract getAllPosts(page?: number, limit?: number): Promise<InterfacePost[]>;
+  abstract getAllPostsAdmin(
+    page?: number,
+    limit?: number,
+  ): Promise<InterfacePost[]>;
   abstract getAllPostsByKeyword(
     keyword: string,
     page?: number,

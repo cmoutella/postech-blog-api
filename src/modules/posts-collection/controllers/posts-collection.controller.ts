@@ -43,8 +43,14 @@ export class PostsController {
   async getAllPosts(page?: number, limit?: number) {
     return await this.postsService.getAllPosts(page, limit);
   }
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('/admin')
+  async getAllPostsAdmin(page?: number, limit?: number) {
+    return await this.postsService.getAllPosts(page, limit);
+  }
 
-  @Get('/keyword/:keyword')
+  @Get('/search/:keyword')
   async getAllPostsByKeyword(@Param('keyword') keyword: string) {
     return await this.postsService.getAllPostsByKeyword(keyword);
   }

@@ -39,6 +39,7 @@ export class UsersController {
     return await this.userService.getAllUsers();
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
@@ -59,6 +60,8 @@ export class UsersController {
     return { token: token };
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deletePost(@Param('id') id: string) {
     await this.userService.deleteUser(id);

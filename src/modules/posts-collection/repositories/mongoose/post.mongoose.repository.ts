@@ -20,6 +20,15 @@ export class PostMongooseRepository implements PostRepository {
     return await this.postModel.find().skip(offset).limit(limit).exec();
   }
 
+  async getAllPostsAdmin(
+    page = 1,
+    limit = DEFAULT_LIMIT,
+  ): Promise<InterfacePost[]> {
+    const offset = (page - 1) * limit;
+
+    return await this.postModel.find().skip(offset).limit(limit).exec();
+  }
+
   async getAllPostsByKeyword(
     keyword: string,
     page = 1,
