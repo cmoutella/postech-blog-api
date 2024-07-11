@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { InterfaceUser } from '../schemas/models/user.interface';
 import { User } from '../schemas/user.schema';
@@ -8,7 +12,11 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async createUser(user: InterfaceUser): Promise<void> {
-    return await this.userRepository.createUser(user);
+    const existingUser = await this.userRepository.getByUsername(user.username);
+    if (existingUser) {
+      throw new ConflictException('Username already exists');
+    }
+    await this.userRepository.createUser(user);
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -17,16 +25,13 @@ export class UserService {
 
   async getByUsername(username: string): Promise<User> {
     const user = await this.userRepository.getByUsername(username);
-
     if (!user) throw new NotFoundException();
     return user;
   }
 
   async deleteUser(id: string): Promise<void> {
     const user = await this.userRepository.getById(id);
-
     if (!user) throw new NotFoundException();
-
     await this.userRepository.deleteUser(id);
   }
 }
