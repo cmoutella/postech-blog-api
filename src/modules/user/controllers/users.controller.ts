@@ -43,7 +43,12 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
-    return await this.userService.getByUsername(username);
+    const u = await this.userService.getByUsername(username);
+    const user: Omit<InterfaceUser, 'password'> = {
+      id: u.id,
+      username: u.username,
+    };
+    return user;
   }
   @ApiBearerAuth()
   @Post('/login')
