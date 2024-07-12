@@ -19,7 +19,7 @@ export class UserService {
     await this.userRepository.createUser(user);
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<Omit<User, 'password'>[]> {
     return await this.userRepository.getAllUsers();
   }
 
