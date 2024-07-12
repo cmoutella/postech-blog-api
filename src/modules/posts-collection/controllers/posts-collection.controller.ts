@@ -10,13 +10,14 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { z } from 'zod';
+
 import { InterfacePost } from '../schemas/models/post.interface';
 import { PostsService } from '../services/posts-collection.service';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
-import { z } from 'zod';
-import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '../../../shared/guards/auth.guard';
+import { LoggingInterceptor } from '../../../shared/interceptors/logging.interceptor';
+import { ZodValidationPipe } from '../../../shared/pipe/zod-validation.pipe';
 
 const createPostSchema = z.object({
   title: z.string(),

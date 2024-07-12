@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { PostRepository } from '../post.repository';
 import { Model } from 'mongoose';
-import { DEFAULT_LIMIT } from 'src/shared/default/pagination';
+import { DEFAULT_LIMIT } from '../../../../shared/default/pagination';
 import { Post } from '../../schemas/post.schema';
 import { InterfacePost } from '../../schemas/models/post.interface';
 

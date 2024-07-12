@@ -9,14 +9,15 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
-import { LoggingInterceptor } from 'src/shared/interceptors/logging.interceptor';
-import { InterfaceUser } from '../schemas/models/user.interface';
-import { UserService } from '../services/user.service';
-import { EncryptPasswordPipe } from '../pipe/password.pipe';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+import { LoggingInterceptor } from '../../../shared/interceptors/logging.interceptor';
+import { InterfaceUser } from '../schemas/models/user.interface';
+import { UserService } from '../services/user.service';
+import { EncryptPasswordPipe } from '../pipe/password.pipe';
+import { AuthGuard } from '../../../shared/guards/auth.guard';
 
 @ApiTags('users')
 @UseInterceptors(LoggingInterceptor)
