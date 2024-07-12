@@ -13,13 +13,16 @@ export class UserMongooseRepository implements UserRepository {
   }
 
   async getAllUsers(): Promise<Omit<InterfaceUser, 'password'>[]> {
-    const users = await this.userModel.find().exec();
+    const users = await this.userModel
+      .find()
+      .exec()
+      .then(() =>
+        users.map((user) => {
+          return { id: user._id.toString(), username: user.username };
+        }),
+      );
 
-    const u = users.map((user) => {
-      return { id: user._id.toString(), username: user.username };
-    });
-
-    return u;
+    return users;
   }
 
   async getById(id: string): Promise<InterfaceUser> {
