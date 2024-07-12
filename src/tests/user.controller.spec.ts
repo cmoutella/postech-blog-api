@@ -1,25 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
 import { UsersController } from 'src/modules/user/controllers/users.controller';
 import { UserService } from 'src/modules/user/services/user.service';
 
-import request from 'supertest';
-
 describe('User Controller', () => {
-  let controller: UsersController;
+  let userController: UsersController;
+  let userService: UserService;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
-    const AppModule: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
-      providers: [UserService],
-    }).compile();
-
-    controller = AppModule.get<UsersController>(UsersController);
+    userController = new UsersController(userService, jwtService);
   });
 
   describe.skip('create: success', () => {
     it('should create user with success and return created user', async () => {
       const newUser = { username: 'teste', password: 'teste' };
-      const response = await request(controller).post('/users').send(newUser);
+      const response = await userController.createUser(newUser);
       expect(response.statusCode).toBe(200);
       expect(response.body.data).toBe({ username: newUser.username });
     });
@@ -28,7 +23,7 @@ describe('User Controller', () => {
   describe.skip('create: error', () => {
     it('should throw error if wrong object', async () => {
       const newUser = { username: 'teste' };
-      const response = await request(controller).post('/users').send(newUser);
+      const response = await userController.createUser(newUser);
       expect(response.statusCode).toBe(401);
       expect(response.body).toBe({ message: 'Username or password missing' });
     });
@@ -37,9 +32,9 @@ describe('User Controller', () => {
   describe.skip('getByUsername: success', () => {
     it('should return success if found', async () => {
       const newUser = { username: 'teste', password: 'teste' };
-      await request(controller).post('/users').send(newUser);
-      const getUserResponse = await request(controller).post(
-        `/users/${newUser.username}`,
+      await userController.createUser(newUser);
+      const getUserResponse = await userController.getByUsername(
+        newUser.username,
       );
       expect(getUserResponse.statusCode).toBe(200);
       expect(getUserResponse.body.data).toBe({ username: newUser.username });
@@ -49,8 +44,8 @@ describe('User Controller', () => {
   describe.skip('getByUsername: error', () => {
     it('should throw error if not found', async () => {
       const newUser = { username: 'teste', password: 'teste' };
-      await request(controller).post('/users').send(newUser);
-      const getUserResponse = await request(controller).post(`/users/jorge`);
+      await userController.createUser(newUser);
+      const getUserResponse = await userController.getByUsername('jorge');
       expect(getUserResponse.statusCode).toBe(404);
     });
   });
@@ -58,12 +53,10 @@ describe('User Controller', () => {
   describe.skip('delete: success', () => {
     it('should delete user with success', async () => {
       const newUser = { username: 'teste', password: 'teste' };
-      const createResponse = await request(controller)
-        .post('/users')
-        .send(newUser);
-      const deleteResponse = await request(controller)
-        .delete(`/users/${createResponse.data.id}`)
-        .send(newUser);
+      const createResponse = await userController.createUser(newUser);
+      const deleteResponse = await userController.deleteUser(
+        createResponse.body.data.id,
+      );
       expect(deleteResponse.statusCode).toBe(200);
     });
   });
