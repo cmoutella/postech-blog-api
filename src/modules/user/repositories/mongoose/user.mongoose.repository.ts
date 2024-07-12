@@ -12,8 +12,17 @@ export class UserMongooseRepository implements UserRepository {
     await createUser.save();
   }
 
-  async getAllUsers(): Promise<InterfaceUser[]> {
-    return await this.userModel.find().exec();
+  async getAllUsers(): Promise<Omit<InterfaceUser, 'password'>[]> {
+    const users = await this.userModel
+      .find()
+      .exec()
+      .then(() =>
+        users.map((user) => {
+          return { id: user._id.toString(), username: user.username };
+        }),
+      );
+
+    return users;
   }
 
   async getById(id: string): Promise<InterfaceUser> {
