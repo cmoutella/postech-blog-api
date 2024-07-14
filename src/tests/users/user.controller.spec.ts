@@ -14,9 +14,6 @@ describe('User Controller', () => {
   let userController: UsersController;
   let userService: UserService;
   let jwtService: JwtService;
-  const jwtMockService = {
-    sign: () => {},
-  };
   const testUsedIds: string[] = [];
 
   const userOne = { username: 'marcoaurelio', password: 'teste' };
@@ -91,24 +88,19 @@ describe('User Controller', () => {
     });
   });
 
-  describe.skip('GET getByUsername', () => {
+  describe('GET getByUsername', () => {
     it('should return success if found', async () => {
-      const newUser = { username: 'teste', password: 'teste' };
-      await userController.createUser(newUser);
       const getUserResponse = await userController.getByUsername(
-        newUser.username,
+        userOne.username,
       );
-      expect(getUserResponse).toBe({ username: newUser.username });
+      expect(getUserResponse.username).toBe(userOne.username);
     });
 
     it('should throw error if not found', async () => {
-      const newUser = { username: 'teste', password: 'teste' };
-      await userController.createUser(newUser);
-      const getUserResponse = await userController.getByUsername('jorge');
-      console.log('# getByUsername error');
-      console.log(getUserResponse);
-      console.log('-----');
-      expect(getUserResponse).toBe({ message: 'Not found' });
+      const searchNonExistingUsername = async () => {
+        await userController.getByUsername(userWrong.username);
+      };
+      expect(searchNonExistingUsername).rejects.toThrow();
     });
   });
 
