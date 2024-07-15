@@ -34,7 +34,6 @@ export class UsersController {
     return await this.userService.createUser(newUser);
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   async getAllUsers() {
     return await this.userService.getAllUsers();
@@ -54,7 +53,7 @@ export class UsersController {
     const foundUser = await this.userService.getByUsername(username);
     const passwordMatch = await compare(password, foundUser.password);
 
-    if (!passwordMatch) throw new Error();
+    if (!passwordMatch) throw new Error('Username or password not matched');
 
     const token = await this.jwtService.sign({ username: username });
 
@@ -62,7 +61,6 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     await this.userService.deleteUser(id);
