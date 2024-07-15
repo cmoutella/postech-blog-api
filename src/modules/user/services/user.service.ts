@@ -2,24 +2,33 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { InterfaceUser } from '../schemas/models/user.interface';
+import {
+  InterfaceUser,
+  PublicInterfaceUser,
+} from '../schemas/models/user.interface';
 import { User } from '../schemas/user.schema';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async createUser(user: InterfaceUser): Promise<void> {
+  async createUser(user: InterfaceUser): Promise<PublicInterfaceUser> {
+    if (!user.username || !user.password) {
+      throw new BadRequestException('Username or password missing');
+    }
+
     const existingUser = await this.userRepository.getByUsername(user.username);
     if (existingUser) {
       throw new ConflictException('Username already exists');
     }
-    await this.userRepository.createUser(user);
+
+    return await this.userRepository.createUser(user);
   }
 
-  async getAllUsers(): Promise<Omit<User, 'password'>[]> {
+  async getAllUsers(): Promise<PublicInterfaceUser[]> {
     return await this.userRepository.getAllUsers();
   }
 

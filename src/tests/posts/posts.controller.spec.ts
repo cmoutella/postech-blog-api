@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostsController } from '../controllers/posts-collection.controller';
-import { PostRepository } from '../repositories/post.repository';
-import { PostMongooseRepository } from '../repositories/mongoose/post.mongoose.repository';
-import { PostsService } from '../services/posts-collection.service';
+import { PostsController } from 'src/modules/posts-collection/controllers/posts-collection.controller';
+import { PostMongooseRepository } from 'src/modules/posts-collection/repositories/mongoose/post.mongoose.repository';
+import { PostRepository } from 'src/modules/posts-collection/repositories/post.repository';
+import { PostsService } from 'src/modules/posts-collection/services/posts-collection.service';
 
 describe('Post Controller', () => {
   let controller: PostsController;
@@ -40,7 +40,7 @@ describe('Post Controller', () => {
   // Get by Keyword
   describe.skip('getAllPostsByKeyword', () => {
     it('should return all posts with the keyword', () => {
-      expect(controller.getAllPostsByKeyword({ keyword: 'word' })).toBe({});
+      expect(controller.getAllPostsByKeyword('keyword')).toBe({});
     });
   });
 

@@ -2,22 +2,27 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserRepository } from '../user.repository';
 import { User, UserDocument } from '../../schemas/user.schema';
-import { InterfaceUser } from '../../schemas/models/user.interface';
+import {
+  InterfaceUser,
+  PublicInterfaceUser,
+} from '../../schemas/models/user.interface';
 
 export class UserMongooseRepository implements UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async createUser(newUser: InterfaceUser): Promise<void> {
+  async createUser(newUser: InterfaceUser): Promise<PublicInterfaceUser> {
     const createUser = new this.userModel(newUser);
-    await createUser.save();
+    const u = await createUser.save();
+
+    return { id: u._id.toString(), username: u.username };
   }
 
   async getAllUsers(): Promise<Omit<InterfaceUser, 'password'>[]> {
     const users = await this.userModel
       .find()
       .exec()
-      .then(() =>
-        users.map((user) => {
+      .then((res) =>
+        res.map((user) => {
           return { id: user._id.toString(), username: user.username };
         }),
       );
