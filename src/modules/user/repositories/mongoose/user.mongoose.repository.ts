@@ -21,8 +21,8 @@ export class UserMongooseRepository implements UserRepository {
     const users = await this.userModel
       .find()
       .exec()
-      .then(() =>
-        users.map((user) => {
+      .then((res) =>
+        res.map((user) => {
           return { id: user._id.toString(), username: user.username };
         }),
       );
