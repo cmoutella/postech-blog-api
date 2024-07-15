@@ -17,11 +17,17 @@ export class UserMongooseRepository implements UserRepository {
     return { id: u._id.toString(), username: u.username };
   }
 
-  async getAllUsers(): Promise<PublicInterfaceUser[]> {
-    const list = await this.userModel.find().exec();
-    return list.map((u) => {
-      return { username: u.username, id: u._id.toString() };
-    });
+  async getAllUsers(): Promise<Omit<InterfaceUser, 'password'>[]> {
+    const users = await this.userModel
+      .find()
+      .exec()
+      .then(() =>
+        users.map((user) => {
+          return { id: user._id.toString(), username: user.username };
+        }),
+      );
+
+    return users;
   }
 
   async getById(id: string): Promise<InterfaceUser> {
