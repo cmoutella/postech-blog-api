@@ -45,6 +45,7 @@ export class UsersController {
   async getByUsername(@Param('username') username: string) {
     return await this.userService.getByUsername(username);
   }
+
   @ApiBearerAuth()
   @Post('/login')
   async authUser(@Body() credentials: InterfaceUser) {
