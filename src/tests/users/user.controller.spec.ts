@@ -45,12 +45,13 @@ describe('User Controller', () => {
   });
 
   afterAll(async () => {
-    console.log('AFTER EACH');
-    console.log('testUsedIds', testUsedIds);
+    if (testUsedIds.length > 0) {
+      testUsedIds.forEach(async (id) => {
+        await userController.deleteUser(id);
+      });
+    }
 
-    testUsedIds.forEach(async (id) => {
-      await userController.deleteUser(id);
-    });
+    tModule.close();
   });
 
   describe('POST create user', () => {
@@ -104,29 +105,23 @@ describe('User Controller', () => {
     });
   });
 
-  describe.skip('DELETE', () => {
+  describe('DELETE', () => {
     it('should call userService for deleteUser', async () => {
+      const u = await userController.createUser(userTwo);
       const spyOnUsersService = jest.spyOn(userService, 'deleteUser');
-      const u = await userController.createUser(userOne);
-
-      if (u?.id) {
-        testUsedIds.push(u.id);
-      }
-
-      const deleteResponse = await userController.deleteUser(u.id);
+      await userController.deleteUser(u.id);
 
       expect(spyOnUsersService).toHaveBeenCalled();
     });
 
-    // it('should throw Not Found it id not matched', async () => {
-    //   const res = await userController.deleteUser(
-    //     testUsedIds[testUsedIds.length - 1],
-    //   );
+    it('should throw Not Found it id not matched', async () => {
+      const deleteNonExistingUser = async () => {
+        await userController.deleteUser('1');
+      };
 
-    //   testUsedIds.pop();
+      testUsedIds.pop();
 
-    //   expect(res.message).toBe('Not found');
-    //   expect(res.status).toBe(404);
-    // });
+      expect(deleteNonExistingUser).rejects.toThrow();
+    });
   });
 });
