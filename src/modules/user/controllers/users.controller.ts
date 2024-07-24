@@ -19,6 +19,16 @@ import { UserService } from '../services/user.service';
 import { EncryptPasswordPipe } from '../pipe/password.pipe';
 import { AuthGuard } from '../../../shared/guards/auth.guard';
 
+import { z } from 'zod';
+import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
+
+const createUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});
+
+type CreateUser = z.infer<typeof createUserSchema>;
+
 @ApiTags('users')
 @UseInterceptors(LoggingInterceptor)
 @Controller('users')
@@ -29,9 +39,10 @@ export class UsersController {
   ) {}
 
   @UsePipes(new EncryptPasswordPipe())
+  @UsePipes(new ZodValidationPipe(createUserSchema))
   @Post()
-  async createUser(@Body() newUser: InterfaceUser) {
-    return await this.userService.createUser(newUser);
+  async createUser(@Body() { username, password }: CreateUser) {
+    return await this.userService.createUser({ username, password });
   }
 
   @Get()
