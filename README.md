@@ -5,7 +5,7 @@ Este projeto foi desenvolvido com [Nest.JS](https://nestjs.com/) como trabalho f
 ### Integrantes do Grupo
 Carolina,
 Jéssica,
-Thiago,
+Tiago,
 Arthur,
 
 
