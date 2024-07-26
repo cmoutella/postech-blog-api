@@ -1,31 +1,51 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostsController } from 'src/modules/posts-collection/controllers/posts-collection.controller';
-import { PostMongooseRepository } from 'src/modules/posts-collection/repositories/mongoose/post.mongoose.repository';
-import { PostRepository } from 'src/modules/posts-collection/repositories/post.repository';
-import { PostsService } from 'src/modules/posts-collection/services/posts-collection.service';
+import { PostsController } from '../../modules/posts-collection/controllers/posts-collection.controller';
+//import { PostMongooseRepository } from '../../modules/posts-collection/repositories/mongoose/post.mongoose.repository';
+import { PostRepository } from '../../modules/posts-collection/repositories/post.repository';
+import { PostsService } from '../../modules/posts-collection/services/posts-collection.service';
+import { AppModule } from '../../app.module';
+import { PostsCollectionModule } from '../../modules/posts-collection/posts-collection.module';
+import { Post } from '../../modules/posts-collection/schemas/post.schema';
 
 describe('Post Controller', () => {
   let controller: PostsController;
+  let postsService: PostsService;
+  let tModule: TestingModule;
+  let testPostsIds: string[] = [];
+
+  const postOne = {
+    title: 'test title',
+    text: 'test text',
+    keyword: ['test', 'keyword'],
+  };
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    tModule = await Test.createTestingModule({
       controllers: [PostsController],
       providers: [
         {
           provide: PostRepository,
-          useClass: PostMongooseRepository,
+          useValue: {
+            createPost: jest.fn().mockResolvedValue(postOne),
+          },
         },
         PostsService,
       ],
+      imports: [AppModule, PostsCollectionModule, Post],
     }).compile();
 
-    controller = app.get<PostsController>(PostsController);
+    controller = await tModule.get<PostsController>(PostsController);
+  });
+
+  afterAll(async () => {
+    await tModule.close();
   });
 
   // Get All
-  describe.skip('getAllPosts', () => {
-    it('should return a list of posts', () => {
-      expect(controller.getAllPosts()).toBe([]);
+  describe('getAllPosts', () => {
+    it('should return a list of posts', async () => {
+      const spyOnPostService = await controller.getAllPosts();
+      expect(spyOnPostService.length > 0).toBeTruthy();
     });
   });
 
@@ -53,7 +73,7 @@ describe('Post Controller', () => {
           text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam at enim ad minim kontem proverb',
           keyWords: ['key', 'word'],
         }),
-      ).toBe([]);
+      ).toBe({});
     });
   });
 
@@ -87,7 +107,7 @@ describe('Post Controller', () => {
 
       expect(
         controller.updatePost(id, {
-          name: 'teste',
+          title: 'teste',
         }),
       ).toBe([]);
     });
