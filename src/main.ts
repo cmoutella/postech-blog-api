@@ -6,7 +6,11 @@ import { setupRedoc } from './shared/middlewares/redoc.middleware';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
+  app.enableCors({
+    origin: ['*', 'http://localhost:3000'],
+    methods: ['POST', 'PUT', 'DELETE', 'GET'],
+  });
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
   const config = new DocumentBuilder()
