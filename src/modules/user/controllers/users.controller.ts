@@ -52,7 +52,6 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
     const u = await this.userService.getByUsername(username);
@@ -64,6 +63,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Get('/id/:id')
   async getById(@Param('id') id: string) {
     const u = await this.userService.getById(id);
