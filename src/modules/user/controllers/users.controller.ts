@@ -21,6 +21,7 @@ import { AuthGuard } from '../../../shared/guards/auth.guard';
 
 import { z } from 'zod';
 import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
+import { addMinutes } from 'date-fns';
 
 const createUserSchema = z.object({
   username: z.string(),
@@ -63,6 +64,17 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
+  @Get('/id/:id')
+  async getById(@Param('id') id: string) {
+    const u = await this.userService.getById(id);
+    const user: Omit<InterfaceUser, 'password'> = {
+      id: u.id,
+      username: u.username,
+    };
+    return user;
+  }
+
+  @ApiBearerAuth()
   @Post('/login')
   async authUser(@Body() credentials: InterfaceUser) {
     const { username, password } = credentials;
@@ -72,9 +84,15 @@ export class UsersController {
 
     if (!passwordMatch) throw new Error('Username or password not matched');
 
+    const authDate = new Date();
     const token = await this.jwtService.sign({ username: username });
+    const tokenExpiration = addMinutes(authDate, 15);
 
-    return { token: token };
+    return {
+      token: token,
+      userId: foundUser.id,
+      expireAt: tokenExpiration.toISOString(),
+    };
   }
 
   @ApiBearerAuth()
