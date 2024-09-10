@@ -90,7 +90,7 @@ export class UsersController {
 
     return {
       token: token,
-      userId: foundUser.id,
+      user: foundUser,
       expireAt: tokenExpiration.toISOString(),
     };
   }
