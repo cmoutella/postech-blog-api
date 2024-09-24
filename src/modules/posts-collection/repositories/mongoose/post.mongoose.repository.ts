@@ -14,7 +14,7 @@ export class PostMongooseRepository implements PostRepository {
 
     await createPost.save();
 
-    const { createdAt, updatedAt, _id: id, ...rest } = createPost;
+    const { createdAt, updatedAt, _id: id, ...rest } = createPost.toObject();
 
     return { id: id.toString(), ...rest };
   }
@@ -32,7 +32,7 @@ export class PostMongooseRepository implements PostRepository {
       .exec();
 
     return results.map((res) => {
-      const { updatedAt, createdAt, _id: id, ...post } = res;
+      const { updatedAt, createdAt, _id: id, ...post } = res.toObject();
 
       return { ...post, createdAt, id: id.toString() };
     });
@@ -52,7 +52,7 @@ export class PostMongooseRepository implements PostRepository {
       .exec();
 
     return results.map((res) => {
-      const { _id: id, ...post } = res;
+      const { _id: id, ...post } = res.toObject();
 
       return { ...post, id: id.toString() };
     });
@@ -73,7 +73,7 @@ export class PostMongooseRepository implements PostRepository {
       .exec();
 
     return results.map((res) => {
-      const { createdAt, updatedAt, _id: id, ...post } = res;
+      const { createdAt, updatedAt, _id: id, ...post } = res.toObject();
 
       return { ...post, id: id.toString() };
     });
@@ -82,7 +82,8 @@ export class PostMongooseRepository implements PostRepository {
   async getOnePost(id: string): Promise<Partial<InterfacePost>> {
     const { _id, updatedAt, ...result } = await this.postModel
       .findById(id)
-      .exec();
+      .exec()
+      .then((res) => res.toObject());
 
     return { id: _id.toString(), ...result };
   }
