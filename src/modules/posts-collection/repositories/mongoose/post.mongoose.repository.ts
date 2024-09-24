@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { InjectModel } from '@nestjs/mongoose';
 import { PostRepository } from '../post.repository';
 import { Model } from 'mongoose';
@@ -8,44 +9,82 @@ import { InterfacePost } from '../../schemas/models/post.interface';
 export class PostMongooseRepository implements PostRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
 
-  async createPost(newPost: InterfacePost): Promise<void> {
+  async createPost(newPost: InterfacePost): Promise<Partial<InterfacePost>> {
     const createPost = new this.postModel(newPost);
 
     await createPost.save();
+
+    const { createdAt, updatedAt, _id: id, ...rest } = createPost;
+
+    return { id: id.toString(), ...rest };
   }
 
-  async getAllPosts(page = 1, limit = DEFAULT_LIMIT): Promise<InterfacePost[]> {
+  async getAllPosts(
+    page = 1,
+    limit = DEFAULT_LIMIT,
+  ): Promise<Partial<InterfacePost>[]> {
     const offset = (page - 1) * limit;
 
-    return await this.postModel.find().skip(offset).limit(limit).exec();
+    const results = await this.postModel
+      .find()
+      .skip(offset)
+      .limit(limit)
+      .exec();
+
+    return results.map((res) => {
+      const { updatedAt, createdAt, _id: id, ...post } = res;
+
+      return { ...post, createdAt, id: id.toString() };
+    });
   }
 
   async getAllPostsAdmin(
+    teacherId,
     page = 1,
     limit = DEFAULT_LIMIT,
   ): Promise<InterfacePost[]> {
     const offset = (page - 1) * limit;
 
-    return await this.postModel.find().skip(offset).limit(limit).exec();
+    const results = await this.postModel
+      .find({ teacherId: teacherId })
+      .skip(offset)
+      .limit(limit)
+      .exec();
+
+    return results.map((res) => {
+      const { _id: id, ...post } = res;
+
+      return { ...post, id: id.toString() };
+    });
   }
 
   async getAllPostsByKeyword(
     keyword: string,
     page = 1,
     limit = DEFAULT_LIMIT,
-  ): Promise<InterfacePost[]> {
+  ): Promise<Partial<InterfacePost>[]> {
     const offset = (page - 1) * limit;
 
     // TODO
-    return await this.postModel
+    const results = await this.postModel
       .find({ keyWords: keyword })
       .skip(offset)
       .limit(limit)
       .exec();
+
+    return results.map((res) => {
+      const { createdAt, updatedAt, _id: id, ...post } = res;
+
+      return { ...post, id: id.toString() };
+    });
   }
 
-  async getOnePost(id: string): Promise<InterfacePost> {
-    return await this.postModel.findById(id).exec();
+  async getOnePost(id: string): Promise<Partial<InterfacePost>> {
+    const { _id, updatedAt, ...result } = await this.postModel
+      .findById(id)
+      .exec();
+
+    return { id: _id.toString(), ...result };
   }
 
   async updatePost(id: string, data: Partial<InterfacePost>): Promise<void> {
