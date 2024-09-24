@@ -13,6 +13,12 @@ export class Post implements InterfacePost {
   @Prop()
   text: string;
   @Prop()
+  teacherId: string;
+  @Prop()
+  createdAt: string;
+  @Prop()
+  updatedAt: string;
+  @Prop()
   keyWords: string[];
 }
 

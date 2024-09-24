@@ -21,6 +21,7 @@ import { ZodValidationPipe } from '../../../shared/pipe/zod-validation.pipe';
 const createPostSchema = z.object({
   title: z.string(),
   text: z.string(),
+  teacherId: z.string(),
   keyWords: z.array(z.string()),
 });
 
@@ -34,6 +35,14 @@ const updatePostSchema = z.object({
 
 type UpdatePost = z.infer<typeof updatePostSchema>;
 
+const getByTeacherSchema = z.object({
+  teacherId: z.string(),
+  page: z.number().optional(),
+  limit: z.number().optional(),
+});
+
+type GetByTeacher = z.infer<typeof getByTeacherSchema>;
+
 @ApiTags('blog')
 @UseInterceptors(LoggingInterceptor)
 @Controller('posts')
@@ -44,8 +53,8 @@ export class PostsController {
   @UseGuards(AuthGuard)
   @UsePipes(new ZodValidationPipe(createPostSchema))
   @Post()
-  async createPost(@Body() { title, text, keyWords }: CreatePost) {
-    await this.postsService.createPost({ title, text, keyWords });
+  async createPost(@Body() { title, text, keyWords, teacherId }: CreatePost) {
+    await this.postsService.createPost({ title, text, keyWords, teacherId });
   }
 
   @Get()
@@ -56,8 +65,8 @@ export class PostsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('/admin')
-  async getAllPostsAdmin(page?: number, limit?: number) {
-    return await this.postsService.getAllPosts(page, limit);
+  async getAllPostsAdmin(@Body() { teacherId, page, limit }: GetByTeacher) {
+    return await this.postsService.getAllPostsAdmin(teacherId, page, limit);
   }
 
   @Get('/search/:keyword')
