@@ -7,3 +7,7 @@ export interface InterfacePost {
   teacherId: string;
   keyWords: string[];
 }
+
+export interface InterfacePostsWithAuthor extends InterfacePost {
+  authorName: string;
+}
