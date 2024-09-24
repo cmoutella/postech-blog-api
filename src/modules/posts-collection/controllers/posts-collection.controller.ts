@@ -64,7 +64,7 @@ export class PostsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Get('/admin')
+  @Post('/admin')
   async getAllPostsAdmin(@Body() { teacherId, page, limit }: GetByTeacher) {
     return await this.postsService.getAllPostsAdmin(teacherId, page, limit);
   }
