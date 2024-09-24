@@ -30,10 +30,10 @@ export class PostsService {
   ): Promise<Partial<InterfacePostsWithAuthor>[]> {
     const posts = await this.postRepository.getAllPosts(page, limit);
 
-    const postsWithAuthor = posts.map(async (post) => {
-      const withAuthor = await getPostsAuthorName(post, this.userRepository);
-      return withAuthor;
-    }) as Partial<InterfacePostsWithAuthor>[];
+    const postsWithAuthor = await getPostsAuthorName(
+      posts,
+      this.userRepository,
+    );
 
     return postsWithAuthor;
   }
@@ -43,7 +43,18 @@ export class PostsService {
     page?: number,
     limit?: number,
   ): Promise<Partial<InterfacePost>[]> {
-    return await this.postRepository.getAllPostsAdmin(teacherId, page, limit);
+    const posts = await this.postRepository.getAllPostsAdmin(
+      teacherId,
+      page,
+      limit,
+    );
+
+    const postsWithAuthor = await getPostsAuthorName(
+      posts,
+      this.userRepository,
+    );
+
+    return postsWithAuthor;
   }
 
   async getAllPostsByKeyword(
@@ -57,10 +68,10 @@ export class PostsService {
       limit,
     );
 
-    const postsWithAuthor = posts.map(async (post) => {
-      const withAuthor = await getPostsAuthorName(post, this.userRepository);
-      return withAuthor;
-    }) as Partial<InterfacePostsWithAuthor>[];
+    const postsWithAuthor = await getPostsAuthorName(
+      posts,
+      this.userRepository,
+    );
 
     return postsWithAuthor;
   }
@@ -70,8 +81,8 @@ export class PostsService {
 
     if (!post) throw new NotFoundException('Post não encontrado');
 
-    const withAuthor = await getPostsAuthorName(post, this.userRepository);
-    return withAuthor;
+    const withAuthor = await getPostsAuthorName([post], this.userRepository);
+    return withAuthor[0];
   }
 
   async updatePost(id: string, data: Partial<InterfacePost>): Promise<void> {

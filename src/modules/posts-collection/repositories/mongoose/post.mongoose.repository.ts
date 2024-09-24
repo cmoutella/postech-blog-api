@@ -32,9 +32,9 @@ export class PostMongooseRepository implements PostRepository {
       .exec();
 
     return results.map((res) => {
-      const { updatedAt, createdAt, _id: id, ...post } = res.toObject();
+      const { updatedAt, createdAt, _id, ...post } = res.toObject();
 
-      return { ...post, createdAt, id: id.toString() };
+      return { ...post, createdAt, id: _id.toString() };
     });
   }
 

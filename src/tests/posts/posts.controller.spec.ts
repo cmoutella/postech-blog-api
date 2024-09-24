@@ -3,6 +3,8 @@ import { PostsController } from 'src/modules/posts-collection/controllers/posts-
 import { PostMongooseRepository } from 'src/modules/posts-collection/repositories/mongoose/post.mongoose.repository';
 import { PostRepository } from 'src/modules/posts-collection/repositories/post.repository';
 import { PostsService } from 'src/modules/posts-collection/services/posts-collection.service';
+import { UserMongooseRepository } from 'src/modules/user/repositories/mongoose/user.mongoose.repository';
+import { UserRepository } from 'src/modules/user/repositories/user.repository';
 
 describe('Post Controller', () => {
   let controller: PostsController;
@@ -14,6 +16,10 @@ describe('Post Controller', () => {
         {
           provide: PostRepository,
           useClass: PostMongooseRepository,
+        },
+        {
+          provide: UserRepository,
+          useClass: UserMongooseRepository,
         },
         PostsService,
       ],
