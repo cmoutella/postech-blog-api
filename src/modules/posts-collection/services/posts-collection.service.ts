@@ -1,10 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostRepository } from '../repositories/post.repository';
-import { InterfacePost } from '../schemas/models/post.interface';
+import {
+  InterfacePost,
+  InterfacePostsWithAuthor,
+} from '../schemas/models/post.interface';
+import { UserRepository } from 'src/modules/user/repositories/user.repository';
+import { getPostsAuthorName } from '../helpers/getAuthor';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly postRepository: PostRepository) {}
+  constructor(
+    private readonly postRepository: PostRepository,
+    private readonly userRepository: UserRepository,
+  ) {}
 
   async createPost(newPost: InterfacePost): Promise<Partial<InterfacePost>> {
     const date = new Date().toISOString();
@@ -19,8 +27,15 @@ export class PostsService {
   async getAllPosts(
     page?: number,
     limit?: number,
-  ): Promise<Partial<InterfacePost>[]> {
-    return await this.postRepository.getAllPosts(page, limit);
+  ): Promise<Partial<InterfacePostsWithAuthor>[]> {
+    const posts = await this.postRepository.getAllPosts(page, limit);
+
+    const postsWithAuthor = posts.map(async (post) => {
+      const withAuthor = await getPostsAuthorName(post, this.userRepository);
+      return withAuthor;
+    }) as Partial<InterfacePostsWithAuthor>[];
+
+    return postsWithAuthor;
   }
 
   async getAllPostsAdmin(
@@ -36,14 +51,27 @@ export class PostsService {
     page?: number,
     limit?: number,
   ): Promise<Partial<InterfacePost>[]> {
-    return await this.postRepository.getAllPostsByKeyword(keyword, page, limit);
+    const posts = await this.postRepository.getAllPostsByKeyword(
+      keyword,
+      page,
+      limit,
+    );
+
+    const postsWithAuthor = posts.map(async (post) => {
+      const withAuthor = await getPostsAuthorName(post, this.userRepository);
+      return withAuthor;
+    }) as Partial<InterfacePostsWithAuthor>[];
+
+    return postsWithAuthor;
   }
 
   async getOnePost(id: string): Promise<Partial<InterfacePost>> {
     const post = await this.postRepository.getOnePost(id);
 
     if (!post) throw new NotFoundException('Post não encontrado');
-    return post;
+
+    const withAuthor = await getPostsAuthorName(post, this.userRepository);
+    return withAuthor;
   }
 
   async updatePost(id: string, data: Partial<InterfacePost>): Promise<void> {
