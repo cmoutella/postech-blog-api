@@ -69,9 +69,9 @@ export class PostsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Post('/admin')
+  @Get('/admin/:teacherId')
   async getAllPostsAdmin(
-    @Body() { teacherId }: GetByTeacher,
+    @Param('teacherId') teacherId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
