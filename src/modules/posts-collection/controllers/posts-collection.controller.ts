@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -37,8 +38,6 @@ type UpdatePost = z.infer<typeof updatePostSchema>;
 
 const getByTeacherSchema = z.object({
   teacherId: z.string(),
-  page: z.number().optional(),
-  limit: z.number().optional(),
 });
 
 type GetByTeacher = z.infer<typeof getByTeacherSchema>;
@@ -58,20 +57,34 @@ export class PostsController {
   }
 
   @Get()
-  async getAllPosts(page?: number, limit?: number) {
+  async getAllPosts(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    console.log('page', page);
+    console.log('limit', limit);
+
     return await this.postsService.getAllPosts(page, limit);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post('/admin')
-  async getAllPostsAdmin(@Body() { teacherId, page, limit }: GetByTeacher) {
+  async getAllPostsAdmin(
+    @Body() { teacherId }: GetByTeacher,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
     return await this.postsService.getAllPostsAdmin(teacherId, page, limit);
   }
 
   @Get('/search/:keyword')
-  async getAllPostsByKeyword(@Param('keyword') keyword: string) {
-    return await this.postsService.getAllPostsByKeyword(keyword);
+  async getAllPostsByKeyword(
+    @Param('keyword') keyword: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    return await this.postsService.getAllPostsByKeyword(keyword, page, limit);
   }
 
   @Get(':id')
