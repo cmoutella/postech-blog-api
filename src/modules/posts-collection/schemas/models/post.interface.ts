@@ -11,3 +11,10 @@ export interface InterfacePost {
 export interface InterfacePostsWithAuthor extends InterfacePost {
   authorName: string;
 }
+
+export interface InterfaceList<T> {
+  data: T;
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
