@@ -4,7 +4,10 @@ import { PostRepository } from '../post.repository';
 import { Model } from 'mongoose';
 import { DEFAULT_LIMIT } from '../../../../shared/default/pagination';
 import { Post } from '../../schemas/post.schema';
-import { InterfacePost } from '../../schemas/models/post.interface';
+import {
+  InterfaceList,
+  InterfacePost,
+} from '../../schemas/models/post.interface';
 
 export class PostMongooseRepository implements PostRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
@@ -22,7 +25,7 @@ export class PostMongooseRepository implements PostRepository {
   async getAllPosts(
     page = 1,
     limit = DEFAULT_LIMIT,
-  ): Promise<Partial<InterfacePost>[]> {
+  ): Promise<InterfaceList<Partial<InterfacePost>[]>> {
     const offset = (page - 1) * limit;
 
     const results = await this.postModel
@@ -31,18 +34,26 @@ export class PostMongooseRepository implements PostRepository {
       .limit(limit)
       .exec();
 
-    return results.map((res) => {
+    const posts = results.map((res) => {
       const { updatedAt, createdAt, _id, ...post } = res.toObject();
-
       return { ...post, createdAt, id: _id.toString() };
     });
+
+    const totalPosts = await this.countPosts();
+
+    return {
+      data: posts,
+      totalItems: totalPosts,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
   }
 
   async getAllPostsAdmin(
     teacherId,
     page = 1,
     limit = DEFAULT_LIMIT,
-  ): Promise<InterfacePost[]> {
+  ): Promise<InterfaceList<Partial<InterfacePost>[]>> {
     const offset = (page - 1) * limit;
 
     const results = await this.postModel
@@ -51,32 +62,47 @@ export class PostMongooseRepository implements PostRepository {
       .limit(limit)
       .exec();
 
-    return results.map((res) => {
+    const posts = results.map((res) => {
       const { _id: id, ...post } = res.toObject();
-
       return { ...post, id: id.toString() };
     });
+
+    const totalPosts = await this.countPosts();
+
+    return {
+      data: posts,
+      totalItems: totalPosts,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
   }
 
   async getAllPostsByKeyword(
     keyword: string,
     page = 1,
     limit = DEFAULT_LIMIT,
-  ): Promise<Partial<InterfacePost>[]> {
+  ): Promise<InterfaceList<Partial<InterfacePost>[]>> {
     const offset = (page - 1) * limit;
 
-    // TODO
     const results = await this.postModel
       .find({ keyWords: keyword })
       .skip(offset)
       .limit(limit)
       .exec();
 
-    return results.map((res) => {
+    const posts = results.map((res) => {
       const { createdAt, updatedAt, _id: id, ...post } = res.toObject();
-
       return { ...post, id: id.toString() };
     });
+
+    const totalPosts = await this.countPosts();
+
+    return {
+      data: posts,
+      totalItems: totalPosts,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
   }
 
   async getOnePost(id: string): Promise<Partial<InterfacePost>> {
@@ -102,5 +128,9 @@ export class PostMongooseRepository implements PostRepository {
 
   async deletePost(id: string): Promise<void> {
     await this.postModel.deleteOne({ _id: id }).exec();
+  }
+
+  async countPosts(): Promise<number> {
+    return await this.postModel.countDocuments().exec();
   }
 }

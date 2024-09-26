@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostRepository } from '../repositories/post.repository';
 import {
+  InterfaceList,
   InterfacePost,
   InterfacePostsWithAuthor,
 } from '../schemas/models/post.interface';
@@ -27,53 +28,53 @@ export class PostsService {
   async getAllPosts(
     page?: number,
     limit?: number,
-  ): Promise<Partial<InterfacePostsWithAuthor>[]> {
-    const posts = await this.postRepository.getAllPosts(page, limit);
+  ): Promise<InterfaceList<Partial<InterfacePostsWithAuthor>[]>> {
+    const res = await this.postRepository.getAllPosts(page, limit);
 
     const postsWithAuthor = await getPostsAuthorName(
-      posts,
+      res.data,
       this.userRepository,
     );
 
-    return postsWithAuthor;
+    return { ...res, data: postsWithAuthor };
   }
 
   async getAllPostsAdmin(
     teacherId: string,
     page?: number,
     limit?: number,
-  ): Promise<Partial<InterfacePost>[]> {
-    const posts = await this.postRepository.getAllPostsAdmin(
+  ): Promise<InterfaceList<Partial<InterfacePostsWithAuthor>[]>> {
+    const res = await this.postRepository.getAllPostsAdmin(
       teacherId,
       page,
       limit,
     );
 
     const postsWithAuthor = await getPostsAuthorName(
-      posts,
+      res.data,
       this.userRepository,
     );
 
-    return postsWithAuthor;
+    return { ...res, data: postsWithAuthor };
   }
 
   async getAllPostsByKeyword(
     keyword: string,
     page?: number,
     limit?: number,
-  ): Promise<Partial<InterfacePost>[]> {
-    const posts = await this.postRepository.getAllPostsByKeyword(
+  ): Promise<InterfaceList<Partial<InterfacePostsWithAuthor>[]>> {
+    const res = await this.postRepository.getAllPostsByKeyword(
       keyword,
       page,
       limit,
     );
 
     const postsWithAuthor = await getPostsAuthorName(
-      posts,
+      res.data,
       this.userRepository,
     );
 
-    return postsWithAuthor;
+    return { ...res, data: postsWithAuthor };
   }
 
   async getOnePost(id: string): Promise<Partial<InterfacePost>> {
