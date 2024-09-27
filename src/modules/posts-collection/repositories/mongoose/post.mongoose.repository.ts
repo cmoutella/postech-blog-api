@@ -67,7 +67,9 @@ export class PostMongooseRepository implements PostRepository {
       return { ...post, id: id.toString() };
     });
 
-    const totalPosts = await this.countPosts();
+    const totalPosts = await this.postModel
+      .find({ teacherId: teacherId })
+      .countDocuments();
 
     return {
       data: posts,
@@ -91,11 +93,13 @@ export class PostMongooseRepository implements PostRepository {
       .exec();
 
     const posts = results.map((res) => {
-      const { createdAt, updatedAt, _id: id, ...post } = res.toObject();
+      const { updatedAt, _id: id, ...post } = res.toObject();
       return { ...post, id: id.toString() };
     });
 
-    const totalPosts = await this.countPosts();
+    const totalPosts = await this.postModel
+      .find({ keyWords: keyword })
+      .countDocuments();
 
     return {
       data: posts,

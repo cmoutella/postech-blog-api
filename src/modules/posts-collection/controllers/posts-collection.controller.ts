@@ -61,9 +61,6 @@ export class PostsController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    console.log('page', page);
-    console.log('limit', limit);
-
     return await this.postsService.getAllPosts(page, limit);
   }
 
