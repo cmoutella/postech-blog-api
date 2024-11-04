@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -29,6 +30,13 @@ const createUserSchema = z.object({
 });
 
 type CreateUser = z.infer<typeof createUserSchema>;
+
+const updateUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});
+
+type UpdateUser = z.infer<typeof updateUserSchema>;
 
 @ApiTags('users')
 @UseInterceptors(LoggingInterceptor)
@@ -93,6 +101,16 @@ export class UsersController {
       user: foundUser,
       expireAt: tokenExpiration.toISOString(),
     };
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Put(':id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateUserSchema)) updateData: UpdateUser,
+  ) {
+    return await this.userService.updateUser(id, updateData);
   }
 
   @ApiBearerAuth()

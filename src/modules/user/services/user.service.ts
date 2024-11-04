@@ -44,6 +44,15 @@ export class UserService {
     return user;
   }
 
+  async updateUser(
+    id: string,
+    data: Partial<InterfaceUser>,
+  ): Promise<Omit<User, 'password'>> {
+    return await this.userRepository.updateUser(id, {
+      ...data,
+    });
+  }
+
   async deleteUser(id: string): Promise<void> {
     const user = await this.userRepository.getById(id);
     if (!user) throw new NotFoundException();

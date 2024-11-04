@@ -58,6 +58,30 @@ export class UserMongooseRepository implements UserRepository {
     return data;
   }
 
+  async updateUser(
+    id: string,
+    data: InterfaceUser,
+  ): Promise<Omit<InterfaceUser, 'password'>> {
+    const user = await this.userModel.findById({ _id: id }).exec();
+
+    if (!user) {
+      return null;
+    }
+
+    await this.userModel.updateOne({ _id: id }, { ...user, ...data }).exec();
+
+    const userUpdated = await this.userModel.findById({ _id: id }).exec();
+
+    const userId = userUpdated._id.toString();
+
+    const updated = {
+      username: userUpdated.username,
+      id: userId,
+    };
+
+    return updated;
+  }
+
   async deleteUser(id: string): Promise<void> {
     await this.userModel.deleteOne({ _id: id }).exec();
   }
