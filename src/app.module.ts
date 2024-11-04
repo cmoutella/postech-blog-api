@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 
 import { PostsCollectionModule } from './modules/posts-collection/posts-collection.module';
 import { UsersModule } from './modules/user/user.module';
+import { StudentModule } from './modules/student/student.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './modules/user/user.module';
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     UsersModule,
+    StudentModule,
     PostsCollectionModule,
     JwtModule.register({
       global: true,
