@@ -85,7 +85,7 @@ export class StudentMongooseRepository implements StudentRepository {
     }
 
     await this.studentModel
-      .updateOne({ _id: id }, { ...student, ...data })
+      .updateOne({ _id: id }, { ...student.toObject(), ...data })
       .exec();
 
     const studentUpdated = await this.studentModel.findById({ _id: id }).exec();
