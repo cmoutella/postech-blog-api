@@ -11,6 +11,8 @@ export class User implements InterfaceUser {
   @Prop()
   username: string;
   @Prop()
+  name: string;
+  @Prop()
   password: string;
 }
 

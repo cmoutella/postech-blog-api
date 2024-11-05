@@ -15,7 +15,10 @@ import { compare } from 'bcryptjs';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { LoggingInterceptor } from '../../../shared/interceptors/logging.interceptor';
-import { InterfaceUser } from '../schemas/models/user.interface';
+import {
+  InterfaceUser,
+  PublicInterfaceUser,
+} from '../schemas/models/user.interface';
 import { UserService } from '../services/user.service';
 import { EncryptPasswordPipe } from '../pipe/password.pipe';
 import { AuthGuard } from '../../../shared/guards/auth.guard';
@@ -27,13 +30,15 @@ import { addMinutes } from 'date-fns';
 const createUserSchema = z.object({
   username: z.string(),
   password: z.string(),
+  name: z.string(),
 });
 
 type CreateUser = z.infer<typeof createUserSchema>;
 
 const updateUserSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().optional(),
+  password: z.string().optional(),
+  name: z.string().optional(),
 });
 
 type UpdateUser = z.infer<typeof updateUserSchema>;
@@ -50,8 +55,8 @@ export class UsersController {
   @UsePipes(new EncryptPasswordPipe())
   @UsePipes(new ZodValidationPipe(createUserSchema))
   @Post()
-  async createUser(@Body() { username, password }: CreateUser) {
-    return await this.userService.createUser({ username, password });
+  async createUser(@Body() { username, password, name }: CreateUser) {
+    return await this.userService.createUser({ username, password, name });
   }
 
   @Get()
@@ -63,9 +68,10 @@ export class UsersController {
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
     const u = await this.userService.getByUsername(username);
-    const user: Omit<InterfaceUser, 'password'> = {
+    const user: PublicInterfaceUser = {
       id: u.id,
       username: u.username,
+      name: u.name,
     };
     return user;
   }
@@ -78,6 +84,7 @@ export class UsersController {
     const user: Omit<InterfaceUser, 'password'> = {
       id: u.id,
       username: u.username,
+      name: u.name,
     };
     return user;
   }
@@ -104,7 +111,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Put(':id')
   async updateUser(
     @Param('id') id: string,

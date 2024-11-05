@@ -14,30 +14,34 @@ export class UserMongooseRepository implements UserRepository {
     const createUser = new this.userModel(newUser);
     const u = await createUser.save();
 
-    return { id: u._id.toString(), username: u.username };
+    return { id: u._id.toString(), username: u.username, name: u.name };
   }
 
-  async getAllUsers(): Promise<Omit<InterfaceUser, 'password'>[]> {
+  async getAllUsers(): Promise<PublicInterfaceUser[]> {
     const users = await this.userModel
       .find()
       .exec()
       .then((res) =>
         res.map((user) => {
-          return { id: user._id.toString(), username: user.username };
+          return {
+            id: user._id.toString(),
+            username: user.username,
+            name: user.name,
+          };
         }),
       );
 
     return users;
   }
 
-  async getById(id: string): Promise<InterfaceUser | null> {
-    const user = await this.userModel.findById({ _id: id }).exec();
+  async getById(id: string): Promise<PublicInterfaceUser | null> {
+    const user = await this.userModel.findOne({ _id: id }).exec();
 
     const userId = user._id.toString();
 
     const data = {
       username: user.username,
-      password: user.password,
+      name: user.username,
       id: userId,
     };
 
@@ -51,6 +55,7 @@ export class UserMongooseRepository implements UserRepository {
 
     const data = {
       username: user.username,
+      name: user.name,
       password: user.password,
       id: userId,
     };
@@ -61,22 +66,24 @@ export class UserMongooseRepository implements UserRepository {
   async updateUser(
     id: string,
     data: InterfaceUser,
-  ): Promise<Omit<InterfaceUser, 'password'>> {
-    const user = await this.userModel.findById({ _id: id }).exec();
+  ): Promise<PublicInterfaceUser> {
+    const user = await this.userModel.findOne({ _id: id }).exec();
 
     if (!user) {
       return null;
     }
 
-    await this.userModel.updateOne({ _id: id }, { ...user, ...data }).exec();
+    console.log('teste 1');
+    await this.userModel
+      .updateOne({ _id: id }, { ...user.toObject(), ...data })
+      .exec();
 
-    const userUpdated = await this.userModel.findById({ _id: id }).exec();
-
-    const userId = userUpdated._id.toString();
+    const userUpdated = await this.userModel.findOne({ _id: id }).exec();
 
     const updated = {
       username: userUpdated.username,
-      id: userId,
+      name: userUpdated.name,
+      id: userUpdated._id.toString(),
     };
 
     return updated;
