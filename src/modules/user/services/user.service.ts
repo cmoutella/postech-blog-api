@@ -9,14 +9,13 @@ import {
   InterfaceUser,
   PublicInterfaceUser,
 } from '../schemas/models/user.interface';
-import { User } from '../schemas/user.schema';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async createUser(user: InterfaceUser): Promise<PublicInterfaceUser> {
-    if (!user.username || !user.password) {
+    if (!user.username || !user.password || !user.name) {
       throw new BadRequestException('Username or password missing');
     }
 
@@ -32,13 +31,13 @@ export class UserService {
     return await this.userRepository.getAllUsers();
   }
 
-  async getByUsername(username: string): Promise<User> {
+  async getByUsername(username: string): Promise<InterfaceUser> {
     const user = await this.userRepository.getByUsername(username);
     if (!user) throw new NotFoundException();
     return user;
   }
 
-  async getById(id: string): Promise<User> {
+  async getById(id: string): Promise<PublicInterfaceUser> {
     const user = await this.userRepository.getById(id);
     if (!user) throw new NotFoundException();
     return user;
@@ -47,7 +46,7 @@ export class UserService {
   async updateUser(
     id: string,
     data: Partial<InterfaceUser>,
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<PublicInterfaceUser> {
     return await this.userRepository.updateUser(id, {
       ...data,
     });
