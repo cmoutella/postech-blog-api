@@ -9,6 +9,7 @@ import {
   InterfaceUser,
   PublicInterfaceUser,
 } from '../schemas/models/user.interface';
+import { InterfaceList } from 'src/modules/posts-collection/schemas/models/post.interface';
 
 @Injectable()
 export class UserService {
@@ -27,8 +28,11 @@ export class UserService {
     return await this.userRepository.createUser(user);
   }
 
-  async getAllUsers(): Promise<PublicInterfaceUser[]> {
-    return await this.userRepository.getAllUsers();
+  async getAllUsers(
+    page?: number,
+    limit?: number,
+  ): Promise<InterfaceList<PublicInterfaceUser[]>> {
+    return await this.userRepository.getAllUsers(page, limit);
   }
 
   async getByUsername(username: string): Promise<InterfaceUser> {

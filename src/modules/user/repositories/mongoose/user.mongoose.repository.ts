@@ -6,6 +6,8 @@ import {
   InterfaceUser,
   PublicInterfaceUser,
 } from '../../schemas/models/user.interface';
+import { DEFAULT_LIMIT } from 'src/shared/default/pagination';
+import { InterfaceList } from 'src/modules/posts-collection/schemas/models/post.interface';
 
 export class UserMongooseRepository implements UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -17,9 +19,16 @@ export class UserMongooseRepository implements UserRepository {
     return { id: u._id.toString(), username: u.username, name: u.name };
   }
 
-  async getAllUsers(): Promise<PublicInterfaceUser[]> {
+  async getAllUsers(
+    page = 1,
+    limit = DEFAULT_LIMIT,
+  ): Promise<InterfaceList<PublicInterfaceUser[]>> {
+    const offset = (page - 1) * limit;
+
     const users = await this.userModel
       .find()
+      .skip(offset)
+      .limit(limit)
       .exec()
       .then((res) =>
         res.map((user) => {
@@ -31,7 +40,14 @@ export class UserMongooseRepository implements UserRepository {
         }),
       );
 
-    return users;
+    const totalPosts = await this.countUsers();
+
+    return {
+      data: users,
+      totalItems: totalPosts,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
   }
 
   async getById(id: string): Promise<PublicInterfaceUser | null> {
@@ -73,7 +89,6 @@ export class UserMongooseRepository implements UserRepository {
       return null;
     }
 
-    console.log('teste 1');
     await this.userModel
       .updateOne({ _id: id }, { ...user.toObject(), ...data })
       .exec();
@@ -91,5 +106,9 @@ export class UserMongooseRepository implements UserRepository {
 
   async deleteUser(id: string): Promise<void> {
     await this.userModel.deleteOne({ _id: id }).exec();
+  }
+
+  async countUsers(): Promise<number> {
+    return await this.userModel.countDocuments().exec();
   }
 }

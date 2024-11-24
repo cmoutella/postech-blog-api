@@ -36,12 +36,6 @@ const updatePostSchema = z.object({
 
 type UpdatePost = z.infer<typeof updatePostSchema>;
 
-const getByTeacherSchema = z.object({
-  teacherId: z.string(),
-});
-
-type GetByTeacher = z.infer<typeof getByTeacherSchema>;
-
 @ApiTags('blog')
 @UseInterceptors(LoggingInterceptor)
 @Controller('posts')

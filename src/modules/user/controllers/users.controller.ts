@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -60,8 +61,11 @@ export class UsersController {
   }
 
   @Get()
-  async getAllUsers() {
-    return await this.userService.getAllUsers();
+  async getAllUsers(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    return await this.userService.getAllUsers(page, limit);
   }
 
   @ApiBearerAuth()
