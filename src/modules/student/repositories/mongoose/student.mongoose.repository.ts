@@ -3,6 +3,8 @@ import { Model } from 'mongoose';
 import { StudentRepository } from '../student.repository';
 import { InterfaceStudent } from '../../schemas/models/student.interface';
 import { Student, StudentDocument } from '../../schemas/student.schema';
+import { DEFAULT_LIMIT } from 'src/shared/default/pagination';
+import { InterfaceList } from 'src/modules/posts-collection/schemas/models/post.interface';
 
 export class StudentMongooseRepository implements StudentRepository {
   constructor(
@@ -16,9 +18,16 @@ export class StudentMongooseRepository implements StudentRepository {
     return { id: u._id.toString(), name: u.name, grades: [] };
   }
 
-  async getAllStudents(): Promise<InterfaceStudent[]> {
-    const student = await this.studentModel
+  async getAllStudents(
+    page = 1,
+    limit = DEFAULT_LIMIT,
+  ): Promise<InterfaceList<InterfaceStudent[]>> {
+    const offset = (page - 1) * limit;
+
+    const students = await this.studentModel
       .find()
+      .skip(offset)
+      .limit(limit)
       .exec()
       .then((res) =>
         res.map((user) => {
@@ -30,7 +39,14 @@ export class StudentMongooseRepository implements StudentRepository {
         }),
       );
 
-    return student;
+    const totalStudents = await this.countStudents();
+
+    return {
+      data: students,
+      totalItems: totalStudents,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
   }
 
   async getById(id: string): Promise<InterfaceStudent | null> {
@@ -103,5 +119,9 @@ export class StudentMongooseRepository implements StudentRepository {
 
   async deleteStudent(id: string): Promise<void> {
     await this.studentModel.deleteOne({ _id: id }).exec();
+  }
+
+  async countStudents(): Promise<number> {
+    return await this.studentModel.countDocuments().exec();
   }
 }

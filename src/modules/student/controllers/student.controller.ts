@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -51,8 +52,11 @@ export class StudentController {
   }
 
   @Get()
-  async getAllUsers() {
-    return await this.studentService.getAllStudents();
+  async getAllStudents(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    return await this.studentService.getAllStudents(page, limit);
   }
 
   @ApiBearerAuth()

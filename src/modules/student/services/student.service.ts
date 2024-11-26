@@ -6,6 +6,7 @@ import {
 import { InterfaceStudent } from '../schemas/models/student.interface';
 import { StudentRepository } from '../repositories/student.repository';
 import { Student } from '../schemas/student.schema';
+import { InterfaceList } from 'src/modules/posts-collection/schemas/models/post.interface';
 
 @Injectable()
 export class StudentService {
@@ -22,8 +23,11 @@ export class StudentService {
     });
   }
 
-  async getAllStudents(): Promise<InterfaceStudent[]> {
-    return await this.studentRepository.getAllStudents();
+  async getAllStudents(
+    page?: number,
+    limit?: number,
+  ): Promise<InterfaceList<InterfaceStudent[]>> {
+    return await this.studentRepository.getAllStudents(page, limit);
   }
 
   async getById(id: string): Promise<Student> {
