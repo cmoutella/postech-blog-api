@@ -6,10 +6,10 @@ export class EncryptPasswordPipe implements PipeTransform {
   constructor() {}
 
   async transform(body: InterfaceUser) {
-    const { username, password } = body;
+    const { password } = body;
     try {
       const hashedPassword = await hash(password, 8);
-      return { username: username, password: hashedPassword };
+      return { ...body, password: hashedPassword };
     } catch (err) {
       throw new BadRequestException('Password format invalid');
     }
