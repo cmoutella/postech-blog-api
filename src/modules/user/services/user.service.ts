@@ -16,11 +16,18 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async createUser(user: InterfaceUser): Promise<PublicInterfaceUser> {
-    if (!user.username || !user.password || !user.name) {
-      throw new BadRequestException('Username or password missing');
+    if (!user.username) {
+      throw new BadRequestException('Username missing');
+    }
+    if (!user.password) {
+      throw new BadRequestException('Password missing');
+    }
+    if (!user.name) {
+      throw new BadRequestException('Name missing');
     }
 
     const existingUser = await this.userRepository.getByUsername(user.username);
+
     if (existingUser) {
       throw new ConflictException('Username already exists');
     }
