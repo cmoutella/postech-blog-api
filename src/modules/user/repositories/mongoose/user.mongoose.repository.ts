@@ -57,7 +57,7 @@ export class UserMongooseRepository implements UserRepository {
 
     const data = {
       username: user.username,
-      name: user.username,
+      name: user.name,
       id: userId,
     };
 
