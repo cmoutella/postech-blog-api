@@ -63,6 +63,15 @@ export class UserService {
     });
   }
 
+  async updatePassword(
+    id: string,
+    data: { password: string },
+  ): Promise<PublicInterfaceUser> {
+    return await this.userRepository.updatePassword(id, {
+      ...data,
+    });
+  }
+
   async deleteUser(id: string): Promise<void> {
     const user = await this.userRepository.getById(id);
     if (!user) throw new NotFoundException();

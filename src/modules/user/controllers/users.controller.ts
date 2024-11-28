@@ -38,11 +38,16 @@ type CreateUser = z.infer<typeof createUserSchema>;
 
 const updateUserSchema = z.object({
   username: z.string().optional(),
-  password: z.string().optional(),
   name: z.string().optional(),
 });
 
 type UpdateUser = z.infer<typeof updateUserSchema>;
+
+const updatePasswordSchema = z.object({
+  password: z.string(),
+});
+
+type UpdatePassword = z.infer<typeof updatePasswordSchema>;
 
 @ApiTags('users')
 @UseInterceptors(LoggingInterceptor)
@@ -115,13 +120,25 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Put(':id')
   async updateUser(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateUserSchema)) updateData: UpdateUser,
   ) {
     return await this.userService.updateUser(id, updateData);
+  }
+
+  @UsePipes(new EncryptPasswordPipe())
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Put('/password/:id')
+  async updatePassword(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updatePasswordSchema))
+    { password }: UpdatePassword,
+  ) {
+    return await this.userService.updatePassword(id, { password });
   }
 
   @ApiBearerAuth()

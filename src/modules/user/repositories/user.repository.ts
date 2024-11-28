@@ -16,5 +16,9 @@ export abstract class UserRepository {
     id: string,
     data: Partial<InterfaceUser>,
   ): Promise<PublicInterfaceUser>;
+  abstract updatePassword(
+    id: string,
+    data: { password: string },
+  ): Promise<PublicInterfaceUser>;
   abstract deleteUser(id: string): Promise<void>;
 }
