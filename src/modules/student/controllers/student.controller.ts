@@ -46,6 +46,8 @@ export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
   @UsePipes(new ZodValidationPipe(createStudentSchema))
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Post()
   async createStudent(@Body() { name }: CreateStudent) {
     return await this.studentService.createStudent(name);
