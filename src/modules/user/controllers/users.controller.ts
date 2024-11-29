@@ -60,6 +60,8 @@ export class UsersController {
 
   @UsePipes(new EncryptPasswordPipe())
   @UsePipes(new ZodValidationPipe(createUserSchema))
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Post()
   async createUser(@Body() { username, password, name }: CreateUser) {
     return await this.userService.createUser({ username, password, name });
