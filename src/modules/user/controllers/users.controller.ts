@@ -129,14 +129,12 @@ export class UsersController {
     return await this.userService.updateUser(id, updateData);
   }
 
-  @UsePipes(new EncryptPasswordPipe())
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Put('/password/:id')
   async updatePassword(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(updatePasswordSchema))
-    { password }: UpdatePassword,
+    @Body(new EncryptPasswordPipe()) { password }: UpdatePassword,
   ) {
     return await this.userService.updatePassword(id, { password });
   }
